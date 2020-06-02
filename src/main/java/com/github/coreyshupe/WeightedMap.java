@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.SplittableRandom;
 
 public class WeightedMap<T> {
@@ -35,13 +36,13 @@ public class WeightedMap<T> {
         this.addItem(new WeightedItem<>(item, weight));
     }
 
-    @NotNull public T pullRandomItem() {
+    public @NotNull Optional<T> pullRandomItem() {
+        if (backingMap.isEmpty()) return Optional.empty();
         double roll = this.random.nextDouble(top);
         return backingMap.entrySet()
                 .parallelStream()
                 .filter(entry -> entry.getKey().isInRange(roll))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Failed to find item in range."))
-                .getValue();
+                .map(Map.Entry::getValue);
     }
 }
