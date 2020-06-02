@@ -36,6 +36,16 @@ public class WeightedMap<T> {
         this.addItem(new WeightedItem<>(item, weight));
     }
 
+    @NotNull public T pullRandomItemAssert() {
+        double roll = this.random.nextDouble(top);
+        return backingMap.entrySet()
+                .parallelStream()
+                .filter(entry -> entry.getKey().isInRange(roll))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Failed to find item in range."))
+                .getValue();
+    }
+
     public @NotNull Optional<T> pullRandomItem() {
         if (backingMap.isEmpty()) return Optional.empty();
         double roll = this.random.nextDouble(top);
